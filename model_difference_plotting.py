@@ -378,46 +378,6 @@ def plot_threshold_index_diffs(cube1, cube2, i, fp, cube_dt, rain_bin, title):
     cube1_copy.data = np.where(mask, 0, 1)
     difference_binary_cube = cube1_copy.copy(data=cube1_copy.data)
 
-    ######################## RAIN BIN THRESHOLD STEPS #####################################################
-    # # TODO: put this step in its own function so cubes can be arguments
-    # time_constraint = iris.Constraint(forecast_period=i)
-    # cube1_at_lt = cube1.extract(time_constraint)
-    # cube2_at_lt = cube2.extract(time_constraint)
-    #
-    # if rain_bin == "HEAVY_RAIN":
-    #     mask = RAINFALL_THRESHOLDS[rain_bin][0] > cube1_at_lt.data
-    #     cube1_at_lt.data = np.ma.array(cube1_at_lt.data, mask=mask)
-    #     cube2_at_lt.data = np.ma.array(cube2_at_lt.data, mask=mask)
-    #     masked_cube1 = cube1_at_lt.copy(data=cube1_at_lt.data)
-    #     masked_cube2 = cube2_at_lt.copy(data=cube2_at_lt.data)
-    # else:
-    #     mask1 = (RAINFALL_THRESHOLDS[rain_bin][0] > cube1_at_lt.data)
-    #     mask2 = (cube1_at_lt.data >= RAINFALL_THRESHOLDS[rain_bin][1])
-    #     mask3 = (RAINFALL_THRESHOLDS[rain_bin][0] > cube2_at_lt.data)
-    #     mask4 = (cube2_at_lt.data >= RAINFALL_THRESHOLDS[rain_bin][1])
-    #     cube1_at_lt.data = np.ma.array(cube1_at_lt.data, mask=mask1)
-    #     cube1_at_lt.data = np.ma.array(cube1_at_lt.data, mask=mask2)
-    #     cube2_at_lt.data = np.ma.array(cube2_at_lt.data, mask=mask3)
-    #     cube2_at_lt.data = np.ma.array(cube2_at_lt.data, mask=mask4)
-    #     masked_cube1 = cube1_at_lt.copy(data=cube1_at_lt.data)
-    #     masked_cube2 = cube2_at_lt.copy(data=cube2_at_lt.data)
-    #     print(masked_cube1.data[0])
-    #     print("**************")
-    #     print(masked_cube2.data[0])
-    #     print("**************")
-    #
-    # threshold_intersection_cube = masked_cube1 + masked_cube2
-    # LOGGER.info(f"masked_cube1.data[0]: {masked_cube1.data[0]}")
-    # LOGGER.info(f"masked_cube2.data[0]: {masked_cube2.data[0]}")
-    # LOGGER.info(f"threshold_mask_cube.data[0]: {threshold_intersection_cube.data[0]}")
-    # LOGGER.info(f"threshold_mask_cube.data[0].mask: {threshold_intersection_cube.data[0].mask}")
-
-    threshold_masked_data = np.ma.masked_array(intersecting_data, mask=difference_binary_cube.data)
-    # LOGGER.info(f"threshold_masked_data[0]: {threshold_masked_data[0]}")
-    intersected_and_indexed_threshold_cube = index_diff_cube.copy(data=threshold_masked_data)
-
-    ####################################################################################################
-
     # step 6: plot
     # INDEXING PLOTTING
     rgb = np.array(RGBs) / 255
@@ -426,9 +386,6 @@ def plot_threshold_index_diffs(cube1, cube2, i, fp, cube_dt, rain_bin, title):
     plt.figure(figsize=(6, 6))
     plt.title(f"{rain_bin} index difference {title}")
     iplt.pcolormesh(intersected_and_indexed_threshold_cube, cmap=cmap, norm=norm)
-
-    #contour_levels = [0.5]
-    #iplt.contour(intersected_and_indexed_cube, levels=contour_levels, colors='k', linewidths=0.3)
 
     # Calculate midpoints between consecutive bounds
     midpoints = [
@@ -464,7 +421,6 @@ def plot_model_output(cube, fp, i, cube_dt, model):
         extracted_cube.units = "mm"
 
         # MesoPrecip
-        # note that in OVELAYS anything below 0.01 is masked and is white
         rgb_colormap = [
             [255, 255, 255],
             [121, 178, 233],
@@ -774,7 +730,6 @@ def get_hrly_rain_snow_amnt(cubes, rain_stash, snow_stash):
 
 
 class Precip_accumulations:
-    # class level variable
     # rain stash, snow stash
     rainfall_stash = ["m01s04i201", "m01s04i202"]
 
